@@ -6,6 +6,13 @@ export interface Task {
   id: number;
   title: string;
   description?: string;
+  status: TaskStatus;
+}
+
+export enum TaskStatus {
+  Pending = 'pending',
+  InProgress = 'in_progress',
+  Done = 'done',
 }
 
 @Injectable()
@@ -14,12 +21,20 @@ export class TasksService {
   private idSeq = 1;
 
   create(dto: CreateTaskDto): Task {
-    const task: Task = { id: this.idSeq++, title: dto.title, description: dto.description };
+    const task: Task = {
+      id: this.idSeq++,
+      title: dto.title,
+      description: dto.description,
+      status: TaskStatus.Pending,
+    };
     this.tasks.push(task);
     return task;
   }
 
-  findAll(): Task[] {
+  findAll(filter?: { status?: TaskStatus }): Task[] {
+    if (filter?.status) {
+      return this.tasks.filter((t) => t.status === filter.status);
+    }
     return this.tasks;
   }
 
