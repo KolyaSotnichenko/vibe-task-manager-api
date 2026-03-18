@@ -7,6 +7,7 @@ export interface Task {
   title: string;
   description?: string;
   status: TaskStatus;
+  googleCalendarEventId?: string;
 }
 
 export enum TaskStatus {
@@ -20,14 +21,30 @@ export class TasksService {
   private tasks: Task[] = [];
   private idSeq = 1;
 
+  constructor(
+    private readonly calendarClient: import('../google-calendar/google-calendar-client.service').GoogleCalendarClientService,
+  ) {}
+
   create(dto: CreateTaskDto): Task {
     const task: Task = {
       id: this.idSeq++,
       title: dto.title,
       description: dto.description,
       status: TaskStatus.Pending,
+      googleCalendarEventId: dto.googleCalendarEventId,
     };
     this.tasks.push(task);
+    // side-effect after persistence
+    this.calendarClient
+      .createEventFromTask('default-user', {
+        id: String(task.id),
+        title: task.title,
+        description: task.description,
+      })
+      .then((eventId) => {
+        task.googleCalendarEventId = eventId;
+      })
+      .catch(() => undefined);
     return task;
   }
 
@@ -48,6 +65,16 @@ export class TasksService {
     const task = this.findOne(id);
     if (dto.title !== undefined) task.title = dto.title;
     if (dto.description !== undefined) task.description = dto.description;
+    if (dto.googleCalendarEventId !== undefined)
+      task.googleCalendarEventId = dto.googleCalendarEventId;
+    this.calendarClient
+      .updateEventFromTask('default-user', {
+        id: String(task.id),
+        title: task.title,
+        description: task.description,
+        googleCalendarEventId: task.googleCalendarEventId,
+      })
+      .catch(() => undefined);
     return task;
   }
 
@@ -55,6 +82,14 @@ export class TasksService {
     const idx = this.tasks.findIndex((t) => t.id === id);
     if (idx === -1)
       throw new NotFoundException({ error: 'Task not found', code: 'TASK_NOT_FOUND' });
-    this.tasks.splice(idx, 1);
+    const [task] = this.tasks.splice(idx, 1);
+    this.calendarClient
+      .deleteEventByTask('default-user', {
+        id: String(task.id),
+        title: task.title,
+        description: task.description,
+        googleCalendarEventId: task.googleCalendarEventId,
+      })
+      .catch(() => undefined);
   }
 }
