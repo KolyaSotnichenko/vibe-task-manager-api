@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TasksService, Task } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { ListTasksQueryDto } from './dto/list-tasks.query.dto';
 
 @ApiTags('tasks')
 @Controller('tasks')
@@ -19,8 +20,8 @@ export class TasksController {
   @Get()
   @ApiOperation({ summary: 'List tasks' })
   @ApiResponse({ status: 200, type: [Object] })
-  findAll(): Task[] {
-    return this.tasksService.findAll();
+  findAll(@Query() query: ListTasksQueryDto): Task[] {
+    return this.tasksService.findAll({ status: query.status });
   }
 
   @Get(':id')

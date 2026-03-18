@@ -48,7 +48,21 @@
       },
       "get": {
         "operationId": "TasksController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "in_progress",
+                "done"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
