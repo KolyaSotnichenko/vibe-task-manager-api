@@ -11,4 +11,9 @@ export class CreateTaskDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  googleCalendarEventId?: string;
 }
