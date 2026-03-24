@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
-import { HealthModule } from './modules/health/health.module';
-import { TasksModule } from './modules/tasks/tasks.module';
-import { GoogleCalendarModule } from './modules/google-calendar/google-calendar.module';
+// Empty root module
 
 @Module({
-  imports: [HealthModule, TasksModule, GoogleCalendarModule],
+  imports: [],
 })
 export class AppModule {}
