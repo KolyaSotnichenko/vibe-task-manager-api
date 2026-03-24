@@ -1,0 +1,39 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/time": {
+      "get": {
+        "operationId": "TimeController_getTime",
+        "parameters": [
+          {
+            "name": "timezone",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "time"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {}
+  }
+}
